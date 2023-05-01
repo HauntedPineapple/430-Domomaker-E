@@ -17,44 +17,44 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const dbURI = process.env.MONGODB_URI || 'mongodb://localhost/domomakerA';
 mongoose.connect(dbURI).catch((err) => {
-    if (err) {
-        console.log('Could not connect to database');
-        throw err;
-    }
+  if (err) {
+    console.log('Could not connect to database');
+    throw err;
+  }
 });
 
 const redisClient = redis.createClient({
-    url: process.env.REDISCLOUD_URL
+  url: process.env.REDISCLOUD_URL,
 });
-redisClient.on('error', err => console.log('Redis Client Error', err));
+redisClient.on('error', (err) => console.log('Redis Client Error', err));
 
 const app = express();
 
 redisClient.connect().then(() => {
-    app.use(helmet());
-    app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted/`)));
-    app.use(favicon(`${__dirname}/../hosted/img/favicon.png`));
-    app.use(compression());
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(bodyParser.json());
+  app.use(helmet());
+  app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted/`)));
+  app.use(favicon(`${__dirname}/../hosted/img/favicon.png`));
+  app.use(compression());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json());
 
-    app.use(session({
-        key: 'sessionid', // name of the cookie
-        store: new RedisStore({
-            client: redisClient
-        }),
-        secret: 'Domo Arigato',
-        resave: false,
-        saveUninitialized: false
-    }));
+  app.use(session({
+    key: 'sessionid', // name of the cookie
+    store: new RedisStore({
+      client: redisClient,
+    }),
+    secret: 'Domo Arigato',
+    resave: false,
+    saveUninitialized: false,
+  }));
 
-    app.engine('handlebars', expressHandlebars.engine({ defaultLayout: '' }));
-    app.set('view engine', 'handlebars');
-    app.set('views', `${__dirname}/../views`);
+  app.engine('handlebars', expressHandlebars.engine({ defaultLayout: '' }));
+  app.set('view engine', 'handlebars');
+  app.set('views', `${__dirname}/../views`);
 
-    router(app);
-    app.listen(port, (err) => {
-        if (err) throw err;
-        console.log(`Listening on port ${port}`);
-    });
-})
+  router(app);
+  app.listen(port, (err) => {
+    if (err) throw err;
+    console.log(`Listening on port ${port}`);
+  });
+});

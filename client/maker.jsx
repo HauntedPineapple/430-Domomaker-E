@@ -8,13 +8,14 @@ const handleDomo = (e) => {
 
   const name = e.target.querySelector("#domoName").value;
   const age = e.target.querySelector("#domoAge").value;
+  const level = e.target.querySelector("#domoLevel").value;
 
-  if (!name || !age) {
+  if (!name || !age || !level) {
     helper.handleError("All fields are required!");
     return false;
   }
 
-  helper.sendPost(e.target.action, { name, age }, loadDomosFromServer);
+  helper.sendPost(e.target.action, { name, age, level }, loadDomosFromServer);
 
   return false;
 };
@@ -33,7 +34,8 @@ const DomoForm = (props) => {
       <input id="domoName" type="text" name="name" placeholder="Domo Name" />
       <label htmlFor="age">Age: </label>
       <input id="domoAge" type="number" min="0" name="age" />
-
+      <label htmlFor="level">Level: </label>
+      <input id="domoLevel" type="number" min="1" name="level" />
       <input className="makeDomoSubmit" type="submit" value="Make Domo" />
     </form>
   );
@@ -58,7 +60,7 @@ const DomoList = (props) => {
         />
         <h3 className="domoName"> Name: {domo.name} </h3>
         <h3 className="domoAge"> Age: {domo.age} </h3>
-       
+        <h3 className="domoLevel"> Level: {domo.level} </h3>
       </div>
     );
   });
@@ -76,13 +78,9 @@ const loadDomosFromServer = async () => {
 };
 
 const init = () => {
-  ReactDOM.render(
-  	<DomoForm />, 
-  	document.getElementById("makeDomo"));
+  ReactDOM.render(<DomoForm />, document.getElementById("makeDomo"));
 
-  ReactDOM.render(
-  	<DomoList domos={[]} />, 
-  	document.getElementById("domos"));
+  ReactDOM.render(<DomoList domos={[]} />, document.getElementById("domos"));
 
   loadDomosFromServer();
 };
